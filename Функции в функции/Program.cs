@@ -76,9 +76,11 @@ namespace Функции_в_функции
 
         public void Process(string passportData)
         {
+            Passport passport = null;
+
             try
             {
-                Passport passport = new Passport(passportData);
+                passport = new Passport(passportData);
 
                 DataTable dataTable = _dataBase.GetDataTable(passport);
 
@@ -98,9 +100,9 @@ namespace Функции_в_функции
 
                 _view.ShowMessage("Файл db.sqlite не найден. Положите файл в папку вместе с exe.");
             }
-            catch (InvalidDataException exception)
+            catch (InvalidDataException exception) when (passport != null)
             {
-                _view.ShowResult($"Паспорт «{passportData}» в списке участников дистанционного голосования НЕ НАЙДЕН");
+                _view.ShowResult($"Паспорт «{passport.Number}» в списке участников дистанционного голосования НЕ НАЙДЕН");
             }
             catch (ArgumentOutOfRangeException exception)
             {
