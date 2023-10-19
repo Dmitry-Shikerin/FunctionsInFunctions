@@ -65,6 +65,8 @@ namespace Функции_в_функции
 
     class Presenter
     {
+        private const int NumberErrorCode = 1;
+
         private readonly IView _view;
         private readonly DataBase _dataBase;
         private readonly Model _model;
@@ -95,7 +97,7 @@ namespace Функции_в_функции
             }
             catch (SQLiteException exception)
             {
-                if (ex.ErrorCode != 1)
+                if (exception.ErrorCode != NumberErrorCode)
                     return;
 
                 _view.ShowMessage("Файл db.sqlite не найден. Положите файл в папку вместе с exe.");
@@ -135,6 +137,8 @@ namespace Функции_в_функции
 
     class Passport
     {
+        private const int PassportDataLength = 10;
+
         public Passport(string passportData)
         {
             if (passportData == null)
@@ -143,13 +147,13 @@ namespace Функции_в_функции
             if (passportData == "")
                 throw new ArgumentException(nameof(passportData));
 
-            if (passportData.Length < 10)
+            if (passportData.Length < PassportDataLength)
                 throw new ArgumentOutOfRangeException(nameof(passportData));
 
             Number = passportData;
         }
 
-        public string Number { get; private set; }
+        public string Number { get; }
     }
 }
 
