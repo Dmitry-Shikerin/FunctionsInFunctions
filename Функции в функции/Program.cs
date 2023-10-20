@@ -17,7 +17,7 @@ namespace Функции_в_функции
         }
     }
 
-    class Model
+    class VotingSystem
     {
         public bool CanVote(DataTable dataTable)
         {
@@ -69,7 +69,7 @@ namespace Функции_в_функции
 
         private readonly IView _view;
         private readonly DataBase _dataBase;
-        private readonly Model _model;
+        private readonly VotingSystem _votingSystem;
 
         public Presenter(IView view)
         {
@@ -86,7 +86,7 @@ namespace Функции_в_функции
 
                 DataTable dataTable = _dataBase.GetDataTable(passport);
 
-                if (_model.CanVote(dataTable))
+                if (_votingSystem.CanVote(dataTable))
                 {
                     _view.ShowResult($"По паспорту «{passport.Number}» доступ к бюллетеню на дистанционном электронном голосовании ПРЕДОСТАВЛЕН");
                 }
