@@ -14,10 +14,16 @@ namespace Функции_в_функции
     {
         static void Main(string[] args)
         {
+            Database database = new Database();
+            VoteSystem voteSystem = new VoteSystem();
+
+            PresenterFactory presenterFactory = new PresenterFactory(database, voteSystem);
+
+            IView view = new View(presenterFactory);
         }
     }
 
-    class VotingSystem
+    class VoteSystem
     {
         public bool CanVote(DataTable dataTable)
         {
@@ -42,9 +48,9 @@ namespace Функции_в_функции
     {
         private readonly Presenter _presenter;
 
-        public View()
+        public View(PresenterFactory presenterFactory)
         {
-            _presenter = new Presenter(this);
+            _presenter = presenterFactory.Create(this);
         }
 
         public void ShowMessage(string message)
@@ -63,17 +69,36 @@ namespace Функции_в_функции
         }
     }
 
+    class PresenterFactory
+    {
+        private readonly Database _database;
+        private readonly VoteSystem _voteSystem;
+
+        public PresenterFactory(Database database, VoteSystem voteSystem)
+        {
+            _database = database;
+            _voteSystem = voteSystem;
+        }
+
+        public Presenter Create(IView view)
+        {
+            return new Presenter(view, _database, _voteSystem);
+        }
+    }
+
     class Presenter
     {
         private const int NumberErrorCode = 1;
 
         private readonly IView _view;
-        private readonly DataBase _dataBase;
-        private readonly VotingSystem _votingSystem;
+        private readonly Database _database;
+        private readonly VoteSystem _voteSystem;
 
-        public Presenter(IView view)
+        public Presenter(IView view, Database database, VoteSystem voteSystem)
         {
             _view = view;
+            _database = database;
+            _voteSystem = voteSystem;
         }
 
         public void Process(string passportData)
@@ -84,9 +109,9 @@ namespace Функции_в_функции
             {
                 passport = new Passport(passportData);
 
-                DataTable dataTable = _dataBase.GetDataTable(passport);
+                DataTable dataTable = _database.GetDataTable(passport);
 
-                if (_votingSystem.CanVote(dataTable))
+                if (_voteSystem.CanVote(dataTable))
                 {
                     _view.ShowResult($"По паспорту «{passport.Number}» " +
                         $"доступ к бюллетеню на дистанционном электронном голосовании ПРЕДОСТАВЛЕН");
@@ -120,7 +145,7 @@ namespace Функции_в_функции
         }
     }
 
-    class DataBase
+    class Database
     {
         public DataTable GetDataTable(Passport pasport)
         {
