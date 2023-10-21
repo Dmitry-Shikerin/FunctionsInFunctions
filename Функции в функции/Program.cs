@@ -88,11 +88,13 @@ namespace Функции_в_функции
 
                 if (_votingSystem.CanVote(dataTable))
                 {
-                    _view.ShowResult($"По паспорту «{passport.Number}» доступ к бюллетеню на дистанционном электронном голосовании ПРЕДОСТАВЛЕН");
+                    _view.ShowResult($"По паспорту «{passport.Number}» " +
+                        $"доступ к бюллетеню на дистанционном электронном голосовании ПРЕДОСТАВЛЕН");
                 }
                 else
                 {
-                    _view.ShowResult($"По паспорту «{passport.Number}» доступ к бюллетеню на дистанционном электронном голосовании НЕ ПРЕДОСТАВЛЯЛСЯ");
+                    _view.ShowResult($"По паспорту «{passport.Number}» " +
+                        $"доступ к бюллетеню на дистанционном электронном голосовании НЕ ПРЕДОСТАВЛЯЛСЯ");
                 }
             }
             catch (SQLiteException exception)
@@ -104,7 +106,8 @@ namespace Функции_в_функции
             }
             catch (InvalidDataException exception) when (passport != null)
             {
-                _view.ShowResult($"Паспорт «{passport.Number}» в списке участников дистанционного голосования НЕ НАЙДЕН");
+                _view.ShowResult($"Паспорт «{passport.Number}» в " +
+                    $"списке участников дистанционного голосования НЕ НАЙДЕН");
             }
             catch (ArgumentOutOfRangeException exception)
             {
@@ -121,12 +124,15 @@ namespace Функции_в_функции
     {
         public DataTable GetDataTable(Passport pasport)
         {
-            string commandText = string.Format("select * from passports where num='{0}' limit 1;", (object)Form1.ComputeSha256Hash(pasport.Number));
-            string connectionString = string.Format("Data Source=" + Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\db.sqlite");
+            string commandText = string.Format("select * " +
+                "from passports where num='{0}' limit 1;", (object)Form1.ComputeSha256Hash(pasport.Number));
+            string connectionString = string.Format("Data Source=" + 
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\db.sqlite");
 
             SQLiteConnection connection = new SQLiteConnection(connectionString);
             connection.Open();
-            SQLiteDataAdapter sqLiteDataAdapter = new SQLiteDataAdapter(new SQLiteCommand(commandText, connection));
+            SQLiteDataAdapter sqLiteDataAdapter = 
+                new SQLiteDataAdapter(new SQLiteCommand(commandText, connection));
             DataTable dataTable = new DataTable();
             sqLiteDataAdapter.Fill(dataTable);
             connection.Close();
@@ -141,10 +147,7 @@ namespace Функции_в_функции
 
         public Passport(string passportData)
         {
-            if (passportData == null)
-                throw new ArgumentNullException(nameof(passportData));
-
-            if (passportData == "")
+            if (string.IsNullOrEmpty(passportData))
                 throw new ArgumentException(nameof(passportData));
 
             if (passportData.Length < PassportDataLength)
